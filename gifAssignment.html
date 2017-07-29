@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width = device=width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+    <title>Gif Finder</title>
+
+    <!--Scripts-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body>
+
+
+<div class="container-fluid">
+
+    <h1 class="display-3">Gif Finder</h1>
+
+
+    <div class="container">
+
+        <div class="row">
+
+            <div class="col-md-9">
+
+                <h2 class="display-4">Search Buttons</h2>
+
+                <div class="row">
+
+                    <div class="col-sm-12" id="newButtons"></div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <h2 class="display-4">Search Box</h2>
+
+                <div class="row">
+
+                    <div class="col-sm-3" id="buttonParam">
+
+                        <button class="btn btn-info btn-sm" id="searchButton">Search</button>
+
+
+                    </div>
+
+                    <div class="col-sm-9" id="searchBoxParam">
+
+                        <input type="text" name="searchBox" placeholder="Search Giphy...." class="form-control" id="searchBox">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="row" id="gifsRow">
+
+                <h2 class="display-4">Gifs</h2>
+
+                <div class="col-md-12" id="gifBox"></div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+</div>
+<script>
+	
+	$(document).ready(function () {
+
+//Game Page
+
+
+    $("#searchButton").click(function () {
+
+        var searchItem = $("#searchBox").val();
+
+        console.log(searchItem);
+
+        $("#newButtons").append("<button class= 'fakeButtons btn btn-info btn-sm' data-person= "
+            + searchItem.split(" ").join("+") + ">" + searchItem + "</button>");
+
+        $(".fakeButtons").on("click", function () {
+
+            $("#gifBox").empty();
+
+            var person = $(this).attr("data-person");
+
+            console.log(person);
+
+            var queryURL = "http://api.giphy.com/v1/gifs/search?q=" +
+                person + "&api_key=dc6zaTOxFJmzC&limit=10";
+
+            $.ajax({
+                url: queryURL,
+                method: "GET"
+            })
+                .done(function (response) {
+
+                    var results = response.data;
+
+                    for (var i = 0; i < results.length; i++) {
+
+                        var gifDiv = $("<div class='gifLocation'>");
+
+                        var personImage = $("<img class='gifs'>");
+
+                        personImage.attr("src", results[i].images.fixed_height.url);
+
+                        personImage.attr("data-animate", results[i].images.fixed_height.url);
+
+                        personImage.attr("data-still", results[i].images.fixed_height_still.url);
+
+                        personImage.attr("data-state", "animate");
+
+                        console.log(results);
+
+                        gifDiv.prepend(personImage);
+
+                        $("#gifBox").prepend(gifDiv);
+
+                    }
+
+                    $(".gifs").click( function() {
+
+                        var state = $(this).attr("data-state");
+                        var animateURL = $(this).attr("data-animate");
+                        var stillURL = $(this).attr("data-still");
+
+                        if (state === "still") {
+
+                            $(this).attr("src", animateURL);
+                            $(this).attr("data-state", "animate");
+
+                        }
+
+                        else if (state === "animate") {
+                            $(this).attr("src", stillURL);
+                            $(this).attr("data-state", "still");
+                        }
+
+                    });
+
+
+                });
+
+
+
+
+        });
+
+    });
+
+});
+
+</script>
+<style type="text/css">
+body {
+	background-color: grey;
+}
+h1 {
+		text-align: center;
+		color: blue;
+	}
+h2 {
+		text-align: center;
+		color: blue;
+	}
+
+.gifs
+{
+    margin: 1% 1% 1% 1%;
+
+    width: 100%;
+
+    height: 30%;
+}
+
+.gifLocation
+{
+    margin: 1% 1% 1% 1%;
+
+    float: left;
+
+    width: 30%;
+
+    height: 30%;
+}
+
+.ratings
+{
+    color: blue;
+}
+.newbuttons {
+	align-self: center;
+}
+</style>
+
+
+
+
+</body>
+</html>
